@@ -33,31 +33,35 @@ public class VkController {
 
     @PostMapping()
     public String requestHandle(@RequestBody String str){
-//        System.out.println("JSON: "+str);
+        System.out.println("JSON: "+str);
         JSONObject jsonObj = new JSONObject(str);
         Gson gson = new Gson();
         Base base = gson.fromJson(str, Base.class);
-        switch (base.getType()) {
-            case CONFIRMATION:
-                if (base.getGroupId() == vkBotConfig.getGroupId()) {
-                    return vkBotConfig.getResponse().toString();
-                } else {
-                    return "Error";
-                }
-            case MESSAGE_NEW:
-                Message message = gson.fromJson(jsonObj.getJSONObject("object").
-                        getJSONObject("message").toString(), Message.class);
-                onUpdate(message);
-                return "ok";
-            case MESSAGE_REPLY:
-                return "ok";
-            case MESSAGE_TYPING_STATE:
-                int peerId = jsonObj.getJSONObject("object").getInt("from_id");
-                typingUpdate(peerId);
-                return "ok";
-            default:
-                System.out.println("Unknown type: " + base.getType());
-                return "ok";
+        if(base.getSecret().equals(vkBotConfig.getSecretPassword())) {
+            switch (base.getType()) {
+                case CONFIRMATION:
+                    if (base.getGroupId() == vkBotConfig.getGroupId()) {
+                        return vkBotConfig.getResponse().toString();
+                    } else {
+                        return "Error";
+                    }
+                case MESSAGE_NEW:
+                    Message message = gson.fromJson(jsonObj.getJSONObject("object").
+                            getJSONObject("message").toString(), Message.class);
+                    onUpdate(message);
+                    return "ok";
+                case MESSAGE_REPLY:
+                    return "ok";
+                case MESSAGE_TYPING_STATE:
+                    int peerId = jsonObj.getJSONObject("object").getInt("from_id");
+                    typingUpdate(peerId);
+                    return "ok";
+                default:
+                    System.out.println("Unknown type: " + base.getType());
+                    return "ok";
+            }
+        }else {
+            return "no";
         }
     }
 

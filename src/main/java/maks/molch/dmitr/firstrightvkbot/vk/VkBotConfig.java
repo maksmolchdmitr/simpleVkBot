@@ -27,6 +27,13 @@ import java.util.Set;
 public class VkBotConfig {
     @Value("${vk.bot.response}")
     private String response;
+
+    public String getSecretPassword() {
+        return secretPassword;
+    }
+
+    @Value("${vk.bot.secret}")
+    private String secretPassword;
     private int groupId;
     private String accessToken;
     private TransportClient transportClient;
